@@ -35,13 +35,13 @@ void	arr_free(char **array)
 	}
 }
 
-void	error(void)
+void	error(char *str)
 {
-	perror("execve failed");
+	perror(str);
 	exit(errno);
 }
 
-void	execute(char *argv, char **envp)
+int	execute(char *argv, char **envp)
 {
 	char	**cmd;
 	char	**paths;
@@ -60,16 +60,20 @@ void	execute(char *argv, char **envp)
 		{
 			arr_free(paths);
 			if (execve(path, cmd, envp) == -1)
-				error();
+				return (-1);
+			else
+				return (1);
 		}
 	}
 	arr_free(paths);
+	return (-1);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	int		fd[2];
 	int		file_fd;
+	int		status;
 	pid_t	pid;
 
 	file_fd = 0;
@@ -77,30 +81,42 @@ int	main(int argc, char **argv, char **envp)
 	if (argc == 5)
 	{
 		if (pipe(fd) == -1)
-			error();
+			error("pipe create error");
 		pid = fork();
 		if (pid == -1)
-			error();
+			error("fork: ");
 		if (pid == 0)
 		{
 			file_fd = open(argv[1], O_RDONLY, 0777);
 			if (file_fd == -1)
-				error();
-			dup2(fd[1], STDOUT_FILENO);
-			dup2(file_fd, STDIN_FILENO);
+				error("open file failed");
+			dup2(fd[1], 1);
+			dup2(file_fd, 0);
 			close(fd[0]);
-			execute(argv[2], envp);
+			if (execute(argv[2], envp) == -1)
+			{
+//				perror("Error");
+				write(2, "command not found\n", 18);
+				exit(ENOENT);
+			}
 		}
-		waitpid(pid, NULL, 0);
+		waitpid(pid, &status, 0);
+		if (status < 0)
+			error("child process error");
 		if (pid > 0)
 		{
 			file_fd = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
 			if (file_fd == -1)
-				error();
-			dup2(fd[0], STDIN_FILENO);
-			dup2(file_fd, STDOUT_FILENO);
+				error("open file failed");
+			dup2(fd[0], 0);
+			dup2(file_fd, 1);
 			close(fd[1]);
-			execute(argv[3], envp);
+			if (execute(argv[3], envp) == -1)
+			{
+//				perror("Error");
+				write(2, "command not found\n", 18);
+				exit(ENOENT);
+			}
 		}
 		close(fd[0]);
 		close(fd[1]);
@@ -110,7 +126,7 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("Error: Bad arguments\n", 2);
 		ft_putstr_fd("Ex: ./pipex <file1> <cmd1> <cmd2> file2\n", 1);
 	}
-	return (0);
+	return (1);
 }
 
 
