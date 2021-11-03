@@ -22,6 +22,7 @@ B_WALL			=	$(WALL)$(NORM)
 ROOF			=	$(BOLD)$(WALL)===============================================$(WALL)
 
 SRCS_NAME		=	main.c				\
+					utils.c				\
 					ft_split.c			\
 					ft_strjoin.c		\
 					ft_strncmp_old.c	\

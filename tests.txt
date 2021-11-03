@@ -9,5 +9,27 @@
 < 3.txt grep Now | wc -w > 4.txt
 
 23 - 25
-./pipex "1.txt" "notexisting" "wc" "2.txt"
-< 3.txt notexisting | wc > 4.txt
+../pipex input "notexisting" "wc" output
+< input notexisting | wc > output
+
+26 -  28
+..//pipex "assets/deepthought.txt" "cat" "notexisting" "outs/test-xx.txt"
+< "assets/deepthought.txt" "cat" | "notexisting" > "outs/test-xx.txt"
+
+29 - 30
+..//pipex "assets/deepthought.txt" "grep Now" "/bin/cat" "outs/test-xx.txt"
+< "assets/deepthought.txt" grep Now | /bin/cat > "outs/test-xx.txt"
+
+31
+..//pipex "/dev/urandom" "cat" "head -1" "outs/test-xx.txt"
+< "/dev/urandom" "cat" | "head -1" > "outs/test-xx.txt"
+
+======================MEDIC======================
+
+FIRST TEST
+./pipex input "grep Hello" "wc -l" output
+< input grep Hello | wc -l > output
+
+SECOND TEST
+../pipex ./pipexMedic/input "grep Hello" "wc -l" ./pipexMedic/output
+< input grep Hello | wc -l > output
