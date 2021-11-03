@@ -33,3 +33,7 @@ FIRST TEST
 SECOND TEST
 ../pipex ./pipexMedic/input "grep Hello" "wc -l" ./pipexMedic/output
 < input grep Hello | wc -l > output
+
+BONUS_TEST
+./pipex input "ls -la" "wc -l" "cat -e" output
+< input ls -la | wc -l | cat -e > output

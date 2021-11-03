@@ -1,28 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jberegon <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jberegon <jberegon@student.21-schoo>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/03 19:36:32 by jberegon          #+#    #+#             */
-/*   Updated: 2021/11/03 19:36:33 by jberegon         ###   ########.fr       */
+/*   Created: 2021/09/02 06:53:05 by jberegon          #+#    #+#             */
+/*   Updated: 2021/09/02 06:53:09 by jberegon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
-
-#include <fcntl.h>
-#include <errno.h>
-
-#ifndef BUFFER_SIZE
-	# define	BUFFER_SIZE 32
-#endif
-
 #include "libft.h"
 
-void	arr_free(char **array);
-int		get_next_line(int fd, char **line);
+char	*ft_strdup(const char *src)
+{
+	char	*dst;
+	size_t	len;
+	int		i;
 
-#endif
+	i = 0;
+	len = ft_strlen(src);
+	dst = malloc(sizeof(*dst) * (len + 1));
+	if (!dst)
+		return (NULL);
+	while (i < len)
+	{
+		dst[i] = src[i];
+		i++;
+	}
+	dst[i] = '\0';
+	return (dst);
+}
