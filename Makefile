@@ -27,6 +27,7 @@ M_SRCS_NAME		=	main.c				\
 B_SRCS_NAME		=	bonus_main.c		\
 					utils.c				\
 					get_next_line.c		\
+					add_to_file.c		\
 
 M_OBJS_NAME		=	$(M_SRCS_NAME:.c=.o)
 B_OBJS_NAME		=	$(B_SRCS_NAME:.c=.o)

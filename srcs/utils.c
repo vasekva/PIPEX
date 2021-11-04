@@ -12,6 +12,75 @@
 
 #include "pipex.h"
 
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	int				def;
+	unsigned char	*p_s1;
+	unsigned char	*p_s2;
+
+	def = ft_strlen(s1) - ft_strlen(s2);
+	if (def < 0)
+		return (-1);
+	if (def > 0)
+		return (1);
+	p_s1 = (unsigned char *)s1;
+	p_s2 = (unsigned char *)s2;
+	while (n-- != 0 && (*p_s1 || *p_s2))
+	{
+		if (*p_s1 < *p_s2)
+			return (-1);
+		if (*p_s1 > *p_s2)
+			return (1);
+		p_s1++;
+		p_s2++;
+	}
+	return (0);
+}
+
+static int	exec_cmd(char **paths, char **cmds, char **envp)
+{
+	char	*path;
+	int		i;
+
+	i = -1;
+	path = NULL;
+	while (paths[++i])
+	{
+		if (!ft_strncmp_old("/bin/", cmds[0], 5))
+			path = ft_strjoin(paths[i], cmds[0] + 4, -1);
+		else
+			path = ft_strjoin(paths[i], ft_strjoin("/", cmds[0], -1), 1);
+		if (access(path, F_OK) == 0)
+		{
+			arr_free(paths);
+			if (execve(path, cmds, envp) == -1)
+				return (-1);
+			else
+				return (1);
+		}
+	}
+	return (-1);
+}
+
+int	execute(char *arg, char **envp)
+{
+	char	**cmds;
+	char	**paths;
+	int		i;
+
+	cmds = ft_split(arg, ' ');
+	if (!cmds)
+		exit(1);
+	i = -1;
+	while (envp[++i])
+	{
+		if (!ft_strncmp_old(envp[i], "PATH", 4))
+			break ;
+	}
+	paths = ft_split(envp[i] + 5, ':');
+	return (exec_cmd(paths, cmds, envp));
+}
+
 void	arr_free(char **array)
 {
 	int	ind;

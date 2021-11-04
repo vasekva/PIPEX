@@ -12,51 +12,7 @@
 
 #include "pipex.h"
 
-static int	exec_cmd(char **paths, char **cmds, char **envp)
-{
-	char	*path;
-	int		i;
-
-	i = -1;
-	path = NULL;
-	while (paths[++i])
-	{
-		if (!ft_strncmp_old("/bin/", cmds[0], 5))
-			path = ft_strjoin(paths[i], cmds[0] + 4, -1);
-		else
-			path = ft_strjoin(paths[i], ft_strjoin("/", cmds[0], -1), 1);
-		if (access(path, F_OK) == 0)
-		{
-			arr_free(paths);
-			if (execve(path, cmds, envp) == -1)
-				return (-1);
-			else
-				return (1);
-		}
-	}
-	return (-1);
-}
-
-static int	execute(char *arg, char **envp)
-{
-	char	**cmds;
-	char	**paths;
-	int		i;
-
-	cmds = ft_split(arg, ' ');
-	if (!cmds)
-		exit(1);
-	i = -1;
-	while (envp[++i])
-	{
-		if (!ft_strncmp_old(envp[i], "PATH", 4))
-			break ;
-	}
-	paths = ft_split(envp[i] + 5, ':');
-	return (exec_cmd(paths, cmds, envp));
-}
-
-static void	main_process(char **argv, char **envp, int *fd)
+static void	lst_cmd(char **argv, char **envp, int *fd)
 {
 	int	file_fd;
 
@@ -67,7 +23,9 @@ static void	main_process(char **argv, char **envp, int *fd)
 		exit(1);
 	}
 	dup2(fd[0], 0);
+	close(fd[0]);
 	dup2(file_fd, 1);
+	close(file_fd);
 	close(fd[1]);
 	if (execute(argv[3], envp) == -1)
 	{
@@ -76,7 +34,7 @@ static void	main_process(char **argv, char **envp, int *fd)
 	}
 }
 
-static void	child_process(char **argv, char **envp, int *fd)
+static void	fst_cmd(char **argv, char **envp, int *fd)
 {
 	int	file_fd;
 
@@ -87,7 +45,9 @@ static void	child_process(char **argv, char **envp, int *fd)
 		exit(1);
 	}
 	dup2(fd[1], 1);
+	close(fd[1]);
 	dup2(file_fd, 0);
+	close(file_fd);
 	close(fd[0]);
 	if (execute(argv[2], envp) == -1)
 	{
@@ -99,9 +59,11 @@ static void	child_process(char **argv, char **envp, int *fd)
 int	main(int argc, char **argv, char **envp)
 {
 	int		fd[2];
+	int		status;
 	pid_t	pid;
 
 	pid = 0;
+	status = 0;
 	if (argc == 5)
 	{
 		if (pipe(fd) == -1)
@@ -110,9 +72,9 @@ int	main(int argc, char **argv, char **envp)
 		if (pid == -1)
 			exit(1);
 		if (pid == 0)
-			child_process(argv, envp, fd);
+			fst_cmd(argv, envp, fd);
 		if (pid > 0)
-			main_process(argv, envp, fd);
+			lst_cmd(argv, envp, fd);
 		close(fd[0]);
 		close(fd[1]);
 	}

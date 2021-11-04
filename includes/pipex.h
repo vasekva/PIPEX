@@ -13,16 +13,22 @@
 #ifndef PIPEX_H
 # define PIPEX_H
 
-#include <fcntl.h>
-#include <errno.h>
+# include <fcntl.h>
+# include <errno.h>
 
-#ifndef BUFFER_SIZE
-	# define	BUFFER_SIZE 32
-#endif
+# define	BUFFER_SIZE 32
 
-#include "libft.h"
+# include "libft.h"
+
+typedef struct s_file
+{
+	int		fd_out;
+	int		fd_in;
+}				t_file;
 
 void	arr_free(char **array);
 int		get_next_line(int fd, char **line);
+int		execute(char *arg, char **envp);
+void	add_to_file(t_file *s_file, int argc, char **argv);
 
 #endif
