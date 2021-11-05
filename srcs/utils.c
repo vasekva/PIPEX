@@ -53,12 +53,12 @@ static int	exec_cmd(char **paths, char **cmds, char **envp)
 		if (access(path, F_OK) == 0)
 		{
 			arr_free(paths);
-			if (execve(path, cmds, envp) == -1)
-				return (-1);
-			else
-				return (1);
+			execve(path, cmds, envp);
+			return (-1);
 		}
+		free(path);
 	}
+	arr_free(paths);
 	return (-1);
 }
 
@@ -66,19 +66,23 @@ int	execute(char *arg, char **envp)
 {
 	char	**cmds;
 	char	**paths;
+	int		ret;
 	int		i;
 
 	cmds = ft_split(arg, ' ');
 	if (!cmds)
 		exit(1);
 	i = -1;
+	ret = 0;
 	while (envp[++i])
 	{
 		if (!ft_strncmp_old(envp[i], "PATH", 4))
 			break ;
 	}
 	paths = ft_split(envp[i] + 5, ':');
-	return (exec_cmd(paths, cmds, envp));
+	ret = exec_cmd(paths, cmds, envp);
+	arr_free(cmds);
+	return (ret);
 }
 
 void	arr_free(char **array)

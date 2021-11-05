@@ -26,6 +26,22 @@ static void	read_line(char **argv, int *fd)
 	}
 }
 
+void	run_processes(int *fd, int pid, char **argv)
+{
+	if (pid == 0)
+	{
+		close(fd[0]);
+		read_line(argv, fd);
+	}
+	else
+	{
+		close(fd[1]);
+		dup2(fd[0], 0);
+		close(fd[0]);
+		wait(NULL);
+	}
+}
+
 void	add_to_file(t_file *s_file, int argc, char **argv)
 {
 	int		fd[2];
@@ -42,15 +58,5 @@ void	add_to_file(t_file *s_file, int argc, char **argv)
 	pid = fork();
 	if (pid < 0)
 		exit(1);
-	if (pid == 0)
-	{
-		close(fd[0]);
-		read_line(argv, fd);
-	}
-	else
-	{
-		close(fd[1]);
-		dup2(fd[0], 0);
-		wait(NULL);
-	}
+	run_processes(fd, pid, argv);
 }

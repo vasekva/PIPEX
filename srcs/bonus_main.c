@@ -27,6 +27,7 @@ static void	multiple_execute(t_file *s_file, char *cmd, char **envp)
 	{
 		close(fd[0]);
 		dup2(fd[1], 1);
+		close(fd[1]);
 		if (execute(cmd, envp) == -1)
 		{
 			write(2, "Error: command not found\n", 25);
@@ -37,6 +38,7 @@ static void	multiple_execute(t_file *s_file, char *cmd, char **envp)
 	{
 		close(fd[1]);
 		dup2(fd[0], 0);
+		close(fd[0]);
 	}
 }
 
@@ -56,6 +58,7 @@ static void	open_files(t_file *s_file, int argc, char **argv)
 		exit(1);
 	}
 	dup2(s_file->fd_in, 0);
+	close(s_file->fd_in);
 }
 
 void	run_program(t_file *s_file, int argc, char **argv, char **envp)
@@ -78,6 +81,7 @@ void	run_program(t_file *s_file, int argc, char **argv, char **envp)
 	while (i + 2 < argc)
 		multiple_execute(s_file, argv[i++], envp);
 	dup2(s_file->fd_out, 1);
+	close(s_file->fd_out);
 	if (execute(argv[argc - 2], envp))
 	{
 		write(2, "Error: command not found\n", 25);
