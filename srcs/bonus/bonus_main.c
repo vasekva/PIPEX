@@ -92,7 +92,14 @@ int	main(int argc, char **argv, char **envp)
 	t_file	s_file;
 
 	if (argc >= 5)
+	{
+		if (!ft_strncmp(argv[1], "here_doc", 8) && argc != 6)
+		{
+			write(2, "Error: Program with 'here_doc' use only six argc\n", 50);
+			exit(1);
+		}
 		run_program(&s_file, argc, argv, envp);
+	}
 	else
 		write(2, "Error: Program must use more than five arguments\n", 49);
 	return (1);
