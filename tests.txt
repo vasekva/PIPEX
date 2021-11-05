@@ -35,9 +35,9 @@ SECOND TEST
 < input grep Hello | wc -l > output
 
 BONUS_TEST
-./pipex input "ls -la" "wc -l" "cat -e" output
+./pipex_bonus input "ls -la" "wc -l" "cat -e" output
 < input ls -la | wc -l | cat -e > output
 
-./pipex here_doc 2 "ls -la" "wc -l" "cat -e" output
+./pipex_bonus here_doc 2 "ls -la" "wc -l" "cat -e" output
 ls -la << 3 | wc -l | cat -e >> output
 

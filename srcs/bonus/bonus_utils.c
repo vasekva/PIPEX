@@ -12,6 +12,31 @@
 
 #include "pipex.h"
 
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	int				def;
+	unsigned char	*p_s1;
+	unsigned char	*p_s2;
+
+	def = ft_strlen(s1) - ft_strlen(s2);
+	if (def < 0)
+		return (-1);
+	if (def > 0)
+		return (1);
+	p_s1 = (unsigned char *)s1;
+	p_s2 = (unsigned char *)s2;
+	while (n-- != 0 && (*p_s1 || *p_s2))
+	{
+		if (*p_s1 < *p_s2)
+			return (-1);
+		if (*p_s1 > *p_s2)
+			return (1);
+		p_s1++;
+		p_s2++;
+	}
+	return (0);
+}
+
 static int	exec_cmd(char **paths, char **cmds, char **envp)
 {
 	char	*path;
@@ -37,18 +62,15 @@ static int	exec_cmd(char **paths, char **cmds, char **envp)
 	return (-1);
 }
 
-int	execute(char *arg, char **envp)
+int	execute(char *argv, char **envp)
 {
 	char	**cmds;
 	char	**paths;
 	int		ret;
 	int		i;
 
-	cmds = ft_split(arg, ' ');
-	if (!cmds)
-		exit(1);
+	cmds = ft_split(argv, ' ');
 	i = -1;
-	ret = 0;
 	while (envp[++i])
 	{
 		if (!ft_strncmp_old(envp[i], "PATH", 4))
@@ -58,6 +80,32 @@ int	execute(char *arg, char **envp)
 	ret = exec_cmd(paths, cmds, envp);
 	arr_free(cmds);
 	return (ret);
+}
+
+int	get_next_line(char **line)
+{
+	char	*buff;
+	int		i;
+	int		c_w_r;
+	char	c;
+
+	i = 0;
+	c_w_r = 0;
+	buff = (char *)malloc(10000);
+	if (!buff)
+		return (-1);
+	c_w_r = read(0, &c, 1);
+	while (c_w_r && c != '\n' && c != '\0')
+	{
+		if (c != '\n' && c != '\0')
+			buff[i++] = c;
+		c_w_r = read(0, &c, 1);
+	}
+	buff[i] = '\n';
+	buff[++i] = '\0';
+	*line = buff;
+	free(buff);
+	return (c_w_r);
 }
 
 void	arr_free(char **array)

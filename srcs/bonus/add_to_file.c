@@ -9,20 +9,17 @@
 /*   Updated: 2021/11/05 02:15:48 by jberegon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "pipex.h"
 
 static void	read_line(char **argv, int *fd)
 {
 	char	*line;
 
-	line = NULL;
-	while (get_next_line(0, &line))
+	while (get_next_line(&line))
 	{
-		if (!ft_strncmp(line, argv[2], ft_strlen(argv[2])))
+		if (!ft_strncmp_old(line, argv[2], ft_strlen(argv[2])))
 			exit(0);
 		write(fd[1], line, ft_strlen(line));
-		free(line);
 	}
 }
 

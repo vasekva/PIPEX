@@ -27,7 +27,7 @@ typedef struct s_file
 }				t_file;
 
 void	arr_free(char **array);
-int		get_next_line(int fd, char **line);
+int		get_next_line(char **line);
 int		execute(char *arg, char **envp);
 void	add_to_file(t_file *s_file, int argc, char **argv);
 
